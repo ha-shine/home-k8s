@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: qbittorrent
+spec:
+  selector:
+    matchLabels:
+      app: qbittorrent
+  serviceName: qbittorrent
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: qbittorrent
+    spec:
+      containers:
+      - name: qbittorrent
+        image: linuxserver/qbittorrent:4.5.3
+        volumeMounts:
+        - mountPath: /movies
+          name: plex-movies-pvc
+        - mountPath: /tv
+          name: plex-series-pvc
+        - mountPath: /config
+          name: qbittorrent-config-pvc
+        ports:
+        - containerPort: 8080
+          name: web
+        env:
+        - name: PUID
+          value: "1000"
+        - name: PGID
+          value: "1000"
+        - name: WEBUI_PORT
+          value: "8080"
+      volumes:
+      - name: plex-movies-pvc
+        persistentVolumeClaim:
+          claimName: plex-movies-pvc
+      - name: plex-series-pvc
+        persistentVolumeClaim:
+          claimName: plex-series-pvc
+      - name: qbittorrent-config-pvc
+        persistentVolumeClaim:
+          claimName: qbittorrent-config-pvc
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                - key: shine.rocks/hostclass
+                  operator: In
+                  values:
+                  - beefcake

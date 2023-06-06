@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: plex
+spec:
+  selector:
+    matchLabels:
+      app: plex
+  serviceName: plex
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: plex
+    spec:
+      containers:
+      - name: plex
+        image: linuxserver/plex:1.32.3
+        volumeMounts:
+        - mountPath: /movies
+          name: plex-movies-pvc
+        - mountPath: /tv
+          name: plex-series-pvc
+        - mountPath: /config
+          name: plex-config-pvc
+        ports:
+        - containerPort: 32400
+          name: web
+        env:
+        - name: NVIDIA_VISIBLE_DEVICES
+          value: all
+        - name: PUID
+          value: "1000"
+        - name: PGID
+          value: "1000"
+        resources:
+          limits:
+            nvidia.com/gpu: 1
+      volumes:
+      - name: plex-movies-pvc
+        persistentVolumeClaim:
+          claimName: plex-movies-pvc
+      - name: plex-series-pvc
+        persistentVolumeClaim:
+          claimName: plex-series-pvc
+      - name: plex-config-pvc
+        persistentVolumeClaim:
+          claimName: plex-config-pvc
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                - key: shine.rocks/hostclass
+                  operator: In
+                  values:
+                  - beefcake
