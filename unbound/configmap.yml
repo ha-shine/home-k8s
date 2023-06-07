@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: unbound-config
+data:
+  "a-records.conf": |
+    local-data: "plex.local.        A 192.168.20.21"
+    local-data: "qbittorrent.local. A 192.168.20.21"
+    local-data: "dash.k8s.local.    A 192.168.20.21"

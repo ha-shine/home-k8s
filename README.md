@@ -2,17 +2,11 @@
 
 A collection of resources hosted on my home K8s cluster.
 
-# /etc/hosts
+# List of services
 
-Currently, the DNS is done by hardcoding the `/etc/hosts` on my main workstation.
-This will be changed as I add introduce more machines into the network. The below is the content
-of my `/etc/hosts` file.
-
-```
-plex.local        <beefcake-address>
-qbittorrent.local <beefcake-address>
-dash.k8s.local    <beefcake-address>
-```
+- Unbound (Daemonset) for DNS resolving .local hosts
+- Plex media server
+- QBittorrent
 
 # List of items that have not been codified yet
 

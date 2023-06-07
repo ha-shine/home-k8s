@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: unbound-dns
+spec:
+  selector:
+    matchLabels:
+      app: unbound-dns
+  template:
+    metadata:
+      labels:
+        app: unbound-dns
+    spec:
+      containers:
+      - name: unbound-dns
+        image: mvance/unbound:1.17.0
+        ports:
+        - containerPort: 53
+          name: dns-tcp
+          protocol: TCP
+        - containerPort: 53
+          name: dns-udp
+          protocol: UDP
+        volumeMounts:
+        - name: unbound-config
+          mountPath: "/opt/unbound/etc/unbound/a-records.conf"
+          subPath: "a-records.conf"
+          readOnly: true
+      volumes:
+      - name: unbound-config
+        configMap:
+          name: unbound-config
+          items:
+          - key: "a-records.conf"
+            path: "a-records.conf"
